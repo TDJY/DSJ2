@@ -152,7 +152,7 @@
         <div class="right_con setfl">
             <div class="common_wrap">
                 <h3><i class="fa fa-bar-chart"></i> 一周热门排行</h3>
-                <ul class="content_list">
+                <ul class="content_list hotrank_list">
                     <li><span class="first">1</span><a href="#">神奇的水滴摄影，泡泡中的世界泡泡中的世界</a></li>
                     <li><span class="second">2</span><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
                     <li><span class="third">3</span><a href="#">神奇的水滴摄影，泡泡中的世界</a></li>
@@ -227,6 +227,34 @@
     </div>
     <!-- 导包template -->
     <script src="./js/template-web.js"></script>
+     <!-- 热门文章排行 -->
+     <script type="text/html" id="hotrank">
+        {{each data}}
+        {{if $index===0}}
+        <li><span class="first">{{$index+1}}
+        {{else if $index===1}}
+        <li><span class="second">{{$index+1}}
+         {{else if $index===2}} 
+        <li><span class="second">{{$index+1}}
+        {{else}}
+        <li><span>{{$index+1}}
+        {{/if}}
+        </span>
+            <a href="./article.html?id={{$value.id}}">{{$value.title}}</a></li>
+        {{/each}}
+    </script>
+    <script>
+         // 文章热门排行
+         $.ajax({
+            type: 'get',
+            url: 'http://localhost:8080/api/v1/index/rank',
+            dataType: 'json',
+            success: function (res) {
+                console.log("热门文章", res);
+                $('.hotrank_list').html(template('hotrank', res));
+            }
+        })
+    </script>
 </body>
 
 </html>
