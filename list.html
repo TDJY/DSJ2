@@ -227,6 +227,45 @@
     </div>
     <!-- 导包template -->
     <script src="./js/template-web.js"></script>
+    <script id="commentList" type='text/html'>
+    {{each}}
+    <li data-id='{{$value.id}}'>
+        <span>{{$value.author.slice(0,1)}}</span>
+        <b><em>{{$value.author}}</em> {{$value.date}}说:</b>
+        <strong>{{$value.intro}}</strong>
+    </li>
+    {{/each}}
+    </script>
+    <script id="focusList" type="text/html">
+       {{each}}
+       <li><a href="#">{{$value.intro}}</a></li>
+        {{/each}}
+    </script>
+    <script>
+        //列表页最新评论部分
+        $.ajax({
+            type: "get",
+            url: "http://localhost:8080/api/v1/index/latest_comment",
+            dataType: "json",
+            success: function (response) {
+                const data = response.data
+                const htmlStr = template('commentList', data)
+                $('.comment_list').html(htmlStr)
+            }
+        });
+
+        //列表页焦点关注部分
+        $.ajax({
+            type: "get",
+            url: "http://localhost:8080/api/v1/index/attention",
+            dataType: "json",
+            success: function (response) {
+                const data = response.data
+                const htmlStr = template('focusList', data)
+                $('.guanzhu_list').html(htmlStr)
+            }
+        });
+    </script>
 </body>
 
 </html>
