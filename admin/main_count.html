@@ -299,7 +299,7 @@
           url: BigNew.data_article,
           dataType: "json",
           success: function(backdata) {
-            // console.log(backdata);
+            console.log(backdata);
             //获取date伪数组对象
             const dateArr = backdata.date;
             if (backdata.code === 200) {
@@ -395,7 +395,7 @@
           url: BigNew.data_category,
           dataType: "json",
           success: function(response) {
-            // console.log(response);
+            console.log(response);
             myChart1.hideLoading();
             const dataArr = response.date;
             let data = [];

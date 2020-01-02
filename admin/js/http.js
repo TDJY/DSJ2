@@ -33,6 +33,20 @@
         comment_pass: baseURL + '/admin/comment/pass',//文章评论通过
         comment_reject: baseURL + '/admin/comment/reject',//文章评论不通过
         comment_delete: baseURL + '/admin/comment/delete',//文章评论删除
+        data_info: baseURL + '/admin/data/info',
+        data_article: baseURL + '/admin/data/article',
+        data_category: baseURL + '/admin/data/category',
+        data_visit: baseURL + '/admin/data/visit',
+        index_search: baseURL + '/admin/index/search',
+        index_category: baseURL + '/admin/index/category',
+        index_hotpic: baseURL + '/admin/index/hotpic',
+        index_rank: baseURL + '/admin/index/rank',
+        index_latest: baseURL + '/admin/index/latest',
+        index_latest_comment: baseURL + '/admin/index/latest_comment',
+        index_attention: baseURL + '/admin/index/attention',
+        index_artitle: baseURL + '/admin/index/artitle',
+        index_post_comment: baseURL + '/admin/index/post_comment',
+        index_post_comment: baseURL + '/admin/index/post_comment',
     }
     //将接口暴露出去
     window.BigNew = BigNew
