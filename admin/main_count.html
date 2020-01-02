@@ -12,31 +12,32 @@
     <link rel="stylesheet" href="css/main.css">
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="./libs/echarts.js"></script>
+    <script src="./js/http.js"></script>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row spannel_list">
             <div class="col-sm-3 col-xs-6">
-                <div class="spannel">
+                <div class="spannel" id="totalArticle">
                     <em>10015</em><span>篇</span>
                     <b>总文章数</b>
                 </div>
             </div>
             <div class="col-sm-3 col-xs-6">
-                <div class="spannel scolor01">
+                <div class="spannel scolor01" id="dayArticle">
                     <em>123</em><span>篇</span>
                     <b>日新增文章数</b>
                 </div>
             </div>
             <div class="col-sm-3 col-xs-6">
-                <div class="spannel scolor02">
+                <div class="spannel scolor02" id="totalComment">
                     <em>35</em><span>条</span>
                     <b>评论总数</b>
                 </div>
             </div>
             <div class="col-sm-3 col-xs-6">
-                <div class="spannel scolor03">
+                <div class="spannel scolor03" id="dayComment">
                     <em>123</em><span>条</span>
                     <b>日新增评论数</b>
                 </div>
@@ -59,12 +60,41 @@
         <div class="column_pannel" id="column_show"></div>
     </div>
 
+    <!-- 获取统计数据 -->
+    <script>
+        $(function () {
+            $.ajax({
+                type: "get",
+                url: "http://localhost:8080/api/v1/admin/data/info",
+                dataType: "json",
+                success: function (response) {
+                    // // console.log(response.totalArticle);
+                    // console.log(response);
+                    $('#totalArticle em').html(response.totalArticle);
+                    $('#dayArticle em').html(response.dayArticle);
+                    $('#totalComment em').html(response.totalComment);
+                    $('#dayComment em').html(response.dayComment);
+
+                }
+            });
+        })
+    </script>
+
 
     <!-- 折线图 -->
     <script>
-        var json = '{"code":200,"msg":"获取成功","date":[{"date":"2019-05-20","count":23},{"date":"2019-05-21","count":19},{"date":"2019-05-22","count":29},{"date":"2019-05-23","count":24},{"date":"2019-05-24","count":28},{"date":"2019-05-25","count":28},{"date":"2019-05-26","count":19},{"date":"2019-05-27","count":25},{"date":"2019-05-28","count":25}]}';
-        var obj = JSON.parse(json);
-        loadEchars(obj);
+        const xhr = new XMLHttpRequest();
+        xhr.open('get', 'http://localhost:8080/api/v1/admin/data/article');
+        xhr.setRequestHeader('Authorization', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiYWRtaW4iLCJleHAiOjIxNzMyNzU3NjAsImlhdCI6MTU2ODQ3NTc2MH0.tAxNuBtkuB106GoBqOHUTIhC6aWx7GF1LkIWeyX0UJT7BbCDdJ7pBeTFyueu_9w94ynujO83bQz3Bo_9K5R9WTuviz1Nk3DlfoTS_9BZGfP0fd9rOCWCdCvuR9NzmVrfQahusYzgpQeb_romuhDaqi9w-II016yUFn2NIsD5HcU');
+        xhr.send();
+        xhr.onload = function () {
+            var obj = JSON.parse(xhr.responseText);
+            loadEchars(obj);
+        };
+
+        // var json = '{"code":200,"msg":"获取成功","date":[{"date":"2019-05-20","count":23},{"date":"2019-05-21","count":19},{"date":"2019-05-22","count":29},{"date":"2019-05-23","count":24},{"date":"2019-05-24","count":28},{"date":"2019-05-25","count":28},{"date":"2019-05-26","count":19},{"date":"2019-05-27","count":25},{"date":"2019-05-28","count":25}]}';
+        // var obj = JSON.parse(json);
+        // loadEchars(obj);
 
         function loadEchars(obj) {
             // 基于准备好的dom，初始化echarts实例
@@ -86,7 +116,7 @@
                 },
                 title: {
                     left: 'center',
-                    text: '月新增文章数',
+                    text: '日新增文章数',
                 },
 
                 xAxis: {
@@ -150,52 +180,98 @@
 
     <!-- 环形图 -->
     <script>
-        // 基于准备好的dom，初始化echarts实例
-        var myChart1 = echarts.init(document.getElementById('pie_show'));
+        const xhr2 = new XMLHttpRequest();
+        xhr2.open('get', 'http://localhost:8080/api/v1/admin/data/category');
+        xhr2.setRequestHeader('Authorization', 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiYWRtaW4iLCJleHAiOjIxNzMyNzU3NjAsImlhdCI6MTU2ODQ3NTc2MH0.tAxNuBtkuB106GoBqOHUTIhC6aWx7GF1LkIWeyX0UJT7BbCDdJ7pBeTFyueu_9w94ynujO83bQz3Bo_9K5R9WTuviz1Nk3DlfoTS_9BZGfP0fd9rOCWCdCvuR9NzmVrfQahusYzgpQeb_romuhDaqi9w-II016yUFn2NIsD5HcU');
+        xhr2.send();
+        xhr2.onload = function () {
+            var obj = JSON.parse(xhr2.responseText);
+            loadhuan(obj);
 
-        option1 = {
-            title: {
-                left: 'center',
-                text: '分类文章数量比',
-            },
-            tooltip: {
-                trigger: 'item',
-                formatter: "{a} <br/>{b}: {c} ({d}%)"
-            },
-            legend: {
-                orient: 'horizontal',
-                x: 'center',
-                data: ['爱生活', '趣美味', '爱旅行', '爱电影', '爱游泳'],
-                top: 30
-            },
-            color: ['#5885e8', '#13cfd5', '#00ce68', '#ff9565', '#20ff19'],
-            series: [
-                {
-                    name: '分类名称',
-                    type: 'pie',
-                    radius: ['50%', '70%'],
-                    avoidLabelOverlap: false,
-                    label: {
-                        emphasis: {
-                            show: true,
-                            textStyle: {
-                                fontSize: '30',
-                                fontWeight: 'bold'
-                            }
-                        }
-                    },
-                    data: [
-                        { value: 335, name: '爱生活' },
-                        { value: 310, name: '趣美味' },
-                        { value: 234, name: '爱旅行' },
-                        { value: 135, name: '爱电影' },
-                        { value: 548, name: '爱游泳' }
-                    ]
-                }
-            ]
         };
-        // 使用刚指定的配置项和数据显示图表。
-        myChart1.setOption(option1);
+
+        function loadhuan(obj) {
+            var myChart1 = echarts.init(document.getElementById('pie_show'));
+
+            var names = [];
+            var articles = [];
+
+            for (var i = 0; i < obj.date.length; i++) {
+                names.push(obj.date[i].name);
+                articles.push(obj.date[i].articles);
+            }
+            // console.log(names);
+            // console.log(obj.date);
+            // console.log(articles);
+
+            var huansz = [];
+            for (var j = 0; j < obj.date.length; j++) {
+                huansz.push(obj.date[j]);
+
+            }
+            // console.log(huansz);
+
+            var keyMap = {
+                "articles": "value",
+            };
+
+            for (var i = 0; i < huansz.length; i++) {
+                var obj = huansz[i];
+                for (var key in obj) {
+                    var newKey = keyMap[key];
+                    if (newKey) {
+                        obj[newKey] = obj[key];
+                        delete obj[key];
+                    }
+                }
+            }
+
+
+
+
+
+            option1 = {
+                title: {
+                    left: 'center',
+                    text: '分类文章数量比',
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c} ({d}%)"
+                },
+                legend: {
+                    orient: 'horizontal',
+                    x: 'center',
+                    data: names,
+                    top: '40'
+                },
+                color: ['#5885e8', '#13cfd5', '#00ce68', '#ff9565', '#20ff19', '#386'],
+                series: [
+                    {
+                        name: '分类名称',
+                        type: 'pie',
+                        radius: ['30%', '50%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            emphasis: {
+                                show: true,
+                                textStyle: {
+                                    fontSize: '25',
+                                    fontWeight: 'bold'
+                                }
+                            }
+                        },
+                        data: huansz
+
+                    }
+                ]
+            };
+            // 使用刚指定的配置项和数据显示图表。
+            myChart1.setOption(option1);
+        }
+
+        // 基于准备好的dom，初始化echarts实例
+
     </script>
     <!-- 柱状图 -->
     <script>
@@ -212,11 +288,11 @@
                 axisPointer: {            // 坐标轴指示器，坐标轴触发有效
                     type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
                 },
-                
+
             },
             legend: {
                 data: ['爱生活', '趣美味', '爱旅行', '爱电影', '爱游泳'],
-                top:30
+                top: 30
             },
             grid: {
                 left: '3%',
