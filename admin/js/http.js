@@ -26,13 +26,14 @@
         category_delete: baseURL + '/admin/category/delete',
         article_query: baseURL + '/admin/article/query',
         article_delete: baseURL + '/admin/article/delete',
-        article_publish: baseURL + '/admin/article/publish',//文章发布
-        article_search: baseURL + '/admin/article/search',//文章信息查询
-        article_edit: baseURL + '/admin/article/edit',//文章编辑
-        comment_list: baseURL + '/admin/comment/search',//文章评论列表
-        comment_pass: baseURL + '/admin/comment/pass',//文章评论通过
-        comment_reject: baseURL + '/admin/comment/reject',//文章评论不通过
-        comment_delete: baseURL + '/admin/comment/delete',//文章评论删除
+        article_publish: baseURL + '/admin/article/publish', //文章发布
+        article_search: baseURL + '/admin/article/search', //文章信息查询
+        article_edit: baseURL + '/admin/article/edit', //文章编辑
+        comment_list: baseURL + '/admin/comment/search', //文章评论列表
+        comment_pass: baseURL + '/admin/comment/pass', //文章评论通过
+        comment_reject: baseURL + '/admin/comment/reject', //文章评论不通过
+        comment_delete: baseURL + '/admin/comment/delete', //文章评论删除
+        index_artitle: baseURL + '/index/artitle'
     }
     //将接口暴露出去
     window.BigNew = BigNew
