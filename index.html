@@ -238,6 +238,50 @@
        <li><a href="#">{{$value.intro}}</a></li>
         {{/each}}
     </script>
+    <!-- 热点图模板 -->
+    <script type="text/html" id='hotpic'>
+        {{each data}}
+        {{if $index===0}}
+        <li class='first'>
+            {{else}}
+        <li>
+        {{/if}}
+            <a href="./article.html?id={{$value.id}}"><img src="{{$value.cover}}" alt=""></a>
+            <p>{{$value.title}}</p>
+        </li>
+        {{/each}}
+    </script>
+    <!-- 最新资讯模板 -->
+    <script type="text/html" id='common_news'>
+        {{each data}}
+        <div class="common_news_list">
+            <a href="./article.html?id={{$value.id}}" class="list_pic"><img src="{{$value.cover}}" alt=""></a>
+            <h4><a href="./article.html?id={{$value.id}}">{{$value.title}} </a></h4>
+            <p>
+                {{$value.intro}}
+            </p>
+            <div class="new_info">
+                <span>标签：{{$value.category}}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i class="fa fa-eye"></i>&nbsp;阅读( {{$value.read}}
+                    )&nbsp;&nbsp;&nbsp;<i class="fa fa-commenting"></i>&nbsp;评论({{$value.comments}} )</span>
+                <b>发布于 {{$value.date}}</b>
+            </div>
+        </div>
+        {{/each}}
+    </script>
+
+    <script type="text/html" id="hotrank">
+        {{each data}}
+        {{ if $index === 0 }}
+        <li><span class="first">{{ $index+ 1}}
+        {{ else if $index === 1 }}
+        <li><span class="second">{{ $index+ 1}}
+        {{ else if $index === 2 }}
+        <li><span class="third">{{ $index+ 1}}
+         {{ else}}
+        <li><span>{{ $index+ 1}}
+                 {{/if}}</span><a href="./article.html?id={{$value.id}}">{{ $value.title }}</a></li>
+        {{ /each}}
+    </script>
     <!-- 引入jq文件 -->
     <script src="./js/jquery-1.12.4.min.js"></script>
     <script>
@@ -249,7 +293,7 @@
             success: function (response) {
                 const data = response.data
                 const htmlStr = template('commentList', data)
-                // $('.comment_list').html(htmlStr)
+                $('.comment_list').html(htmlStr)
             }
         });
 
@@ -264,6 +308,37 @@
                 $('.guanzhu_list').html(htmlStr)
             }
         });
+
+        // 热点图
+        $.ajax({
+            type: 'get',
+            url: 'http://localhost:8080/api/v1/index/hotpic',
+            dataType: 'json',
+            success: function (response) {
+                let newhot = template('hotpic', response);
+                $('.focus_list').html(newhot)
+            }
+        })
+        // 最新资讯
+        $.ajax({
+            type: 'get',
+            url: 'http://localhost:8080/api/v1/index/latest',
+            dataType: 'json',
+            success: function (res) {
+                $('.common_news').html(template('common_news', res))
+            }
+        })
+        // 文章热门排行
+        $.ajax({
+            type: 'get',
+            url: 'http://localhost:8080/api/v1/index/rank',
+            dataType: 'json',
+            success: function (res) {
+                console.log("热门文章", res);
+                $('.hotrank_list').html(template('hotrank', res));
+            }
+        })
+
     </script>
 </body>
 
