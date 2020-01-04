@@ -13,10 +13,20 @@
     <link rel="stylesheet" href="./libs/jedate/css/jeDate-test.css">
     <link rel="stylesheet" href="./libs/jedate/css/jedate.css">
     <script src="./libs/jedate/js/jedate.js"></script>
+    <script src="https://unpkg.com/wangeditor@3.1.1/release/wangEditor.min.js"></script>
+    <script src="./libs/tinymce/tinymce.min.js"></script>
     <!-- jq -->
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 模板引擎 -->
     <script src="./libs/template-web.js"></script>
+    <script src=""></script>
+    <style>
+        .col-sm-10 {
+            position: relative;
+            width: 50%;
+            z-index: 998;
+        }
+    </style>
 </head>
 
 <body>
@@ -53,20 +63,21 @@
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
-                    <div class="jeinpbox">
-                        <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD"
-                            style='margin-left: 16px'>
-                        <div class="icons jebtns"
-                            onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD',theme: { bgcolor: '#00A680', pnColor: '#00DDAA' }})"
-                            style='right:-17px'>
-                        </div>
-                    </div>
                     <div class="col-sm-4">
+                        <div class="jeitem">
+                            <div class="jeinpbox">
+                                <input type="text" name="date" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
+                                <div class="icons jebtns"
+                                    onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD',theme: { bgcolor: '#00A680', pnColor: '#00DDAA' }})">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
                     <div class="col-sm-10">
+                        <input type="text" class="form-control" id="mytextarea" placeholder="文章内容" value="文章内容">
                     </div>
                 </div>
                 <div class="form-group">
@@ -78,13 +89,154 @@
             </form>
         </div>
     </div>
+
+
+    <script id="category_list" type="text/html">
+    {{each data}}
+     <option value="{{$value.id}}">{{$value.name}}</option>
+    {{/each}}
+    </script>
+    <script type="text/javascript">
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        // 或者 var editor = new E( document.getElementById('editor') )
+        editor.create()
+    </script>
     <script src="./js/http.js"></script>
     <script>
         $(function () {
+            // 发布时间
             jeDate("#testico", {
                 format: "YYYY-MM-DD",
                 isinitVal: true,
             });
+
+
+            //富文本编辑器
+            $(function () {
+                jeDate('#testico', {
+                    trigger: 'click',
+                    theme: { bgcolor: "#00A680", pnColor: "#00DDAA" },//绿色主题
+                    format: "YYYY-MM-DD",
+                    isinitVal: true,
+                });
+
+                /* 初始化选项 */
+                tinymce.init({
+                    selector: '#mytextarea',
+                    height: '350px',
+                    language: 'zh_CN',
+                    directionality: 'ltl',
+                    browser_spellcheck: true,
+                    contextmenu: false,
+                    plugins: [
+                        "advlist autolink lists link image charmap print preview anchor",
+                        "searchreplace visualblocks code fullscreen",
+                        "insertdatetime media table contextmenu paste imagetools wordcount",
+                        "code"
+                    ],
+                    toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code",
+                });
+            });
+
+
+
+            //加载文章类别 请求数据 
+            $.ajax({
+                type: "get",
+                url: BigNew.category_list,
+                success: function (res) {
+
+                    $(".category").html(template("category_list", res))
+                }
+            });
+
+            //加载文章详细信息
+            $.ajax({
+                //请求类型
+                type: "get",
+                //请求地址
+                url: BigNew.article_search,
+                //请求参数
+                data: {
+                    id: 1
+
+                },
+                //参数类型
+                dataType: "json",
+                //回调函数
+                success: function (res) {
+                    console.log(res);
+                    $(".title").val(res.data.title)
+                    $(".article_cover").attr("src", res.data.cover)
+                    $("#testico").val(res.data.date)
+                    $("#editor span").html(res.data.content)
+
+
+
+                }
+            });
+
+            //给#inputCover注册点击事件
+            $("#inputCover").change(function () {
+                //获取选择的图片
+                const file = this.files[0]
+                //把图片转换为路径
+                const url = URL.createObjectURL(file)
+                //把图片路径渲染到页面上去
+                $(".article_cover").attr("src", url)
+            })
+
+
+            //给修改按钮
+            $(".btn-edit").on("click", function (e) {
+                e.preventDefault()
+                fengzhuang("已发布")
+            })
+
+            //点击草稿按钮
+            $(".btn-draft").on("click", function (e) {
+                e.preventDefault()
+                fengzhuang("草稿")
+            })
+
+
+            //封装ajax请求
+            function fengzhuang(state = 1) {
+                //创建一个二进制对象
+                var fd = new FormData($('form')[0]);
+                //添加id 属性       获取ID
+                fd.append('id', location.search.split('=')[1]);
+                //添加content属性   获取富文本内容
+                fd.append('content', tinyMCE.activeEditor.getContent());
+                //追加文章状态
+                fd.append('state', state);
+                //发送请求
+                $.ajax({
+                    //请求地址
+                    url: BigNew.article_edit,
+                    //请求类型
+                    type: 'post',
+                    //请求参数
+                    data: fd,
+                    //参数类型
+                    dataType: "json",
+                    //禁止编码
+                    contentType: false,
+                    processData: false,
+                    //回调函数
+                    success: function (res) {
+                        if (res.code === 200) {
+                            alert("修改成功")
+                            //回退上一页
+                            window.history.back();
+                        } else {
+                            alert(res.msg)
+                        }
+
+                    }
+                });
+            }
 
         })
     </script>
